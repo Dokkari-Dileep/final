@@ -1,0 +1,566 @@
+# import tensorflow as tf
+# from tensorflow import keras
+# from tensorflow.keras import layers, models
+# from tensorflow.keras.preprocessing.image import ImageDataGenerator
+# from tensorflow.keras.applications import EfficientNetB0
+# from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
+# import numpy as np
+# import matplotlib.pyplot as plt
+# import os
+# import json
+
+# # Configuration
+# IMG_SIZE = (224, 224)
+# BATCH_SIZE = 32
+# EPOCHS = 50
+# NUM_CLASSES = 50  # Adjust based on your dataset
+# DATA_DIR = 'C:/Users/dokka/OneDrive/Desktop/multi-crop-disease-detection/uploads'# Update this path
+
+# # Create data generators
+# train_datagen = ImageDataGenerator(
+#     rescale=1./255,
+#     validation_split=0.2,
+#     rotation_range=30,
+#     width_shift_range=0.2,
+#     height_shift_range=0.2,
+#     shear_range=0.2,
+#     zoom_range=0.2,
+#     horizontal_flip=True,
+#     vertical_flip=True,
+#     brightness_range=[0.8, 1.2],
+#     fill_mode='nearest'
+# )
+
+# # Load and augment data
+# train_generator = train_datagen.flow_from_directory(
+#     DATA_DIR,
+#     target_size=IMG_SIZE,
+#     batch_size=BATCH_SIZE,
+#     class_mode='categorical',
+#     subset='training',
+#     shuffle=True
+# )
+
+# validation_generator = train_datagen.flow_from_directory(
+#     DATA_DIR,
+#     target_size=IMG_SIZE,
+#     batch_size=BATCH_SIZE,
+#     class_mode='categorical',
+#     subset='validation',
+#     shuffle=False
+# )
+
+# # Get class names
+# class_names = list(train_generator.class_indices.keys())
+# print(f"Number of classes: {len(class_names)}")
+# print(f"Classes: {class_names}")
+
+# # Save class names for later use
+# with open('class_names.json', 'w') as f:
+#     json.dump(class_names, f)
+
+# # Create the model
+# def create_model(num_classes):
+#     # Load EfficientNetB0 with pre-trained ImageNet weights
+#     base_model = EfficientNetB0(
+#         include_top=False,
+#         weights='imagenet',
+#         input_shape=(224, 224, 3),
+#         pooling='avg'
+#     )
+    
+#     # Freeze base model layers
+#     base_model.trainable = False
+    
+#     # Create new model on top
+#     inputs = keras.Input(shape=(224, 224, 3))
+#     x = base_model(inputs, training=False)
+#     x = layers.Dropout(0.5)(x)
+#     x = layers.Dense(512, activation='relu')(x)
+#     x = layers.BatchNormalization()(x)
+#     x = layers.Dropout(0.3)(x)
+#     outputs = layers.Dense(num_classes, activation='softmax')(x)
+    
+#     model = keras.Model(inputs, outputs)
+    
+#     # Compile the model
+#     model.compile(
+#         optimizer=keras.optimizers.Adam(learning_rate=0.001),
+#         loss='categorical_crossentropy',
+#         metrics=['accuracy', keras.metrics.Precision(), keras.metrics.Recall()]
+#     )
+    
+#     return model
+
+# # Create model
+# model = create_model(len(class_names))
+# model.summary()
+
+# # Callbacks
+# callbacks = [
+#     EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True),
+#     ModelCheckpoint('model/best_model.h5', monitor='val_accuracy', save_best_only=True),
+#     ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=5, min_lr=1e-6)
+# ]
+
+# # Train the model
+# history = model.fit(
+#     train_generator,
+#     steps_per_epoch=train_generator.samples // BATCH_SIZE,
+#     validation_data=validation_generator,
+#     validation_steps=validation_generator.samples // BATCH_SIZE,
+#     epochs=EPOCHS,
+#     callbacks=callbacks,
+#     verbose=1
+# )
+
+# # Save the final model
+# model.save('model/disease_model.h5')
+
+# # Plot training history
+# def plot_training_history(history):
+#     fig, axes = plt.subplots(2, 2, figsize=(12, 10))
+    
+#     # Accuracy
+#     axes[0, 0].plot(history.history['accuracy'], label='Training Accuracy')
+#     axes[0, 0].plot(history.history['val_accuracy'], label='Validation Accuracy')
+#     axes[0, 0].set_title('Model Accuracy')
+#     axes[0, 0].set_xlabel('Epoch')
+#     axes[0, 0].set_ylabel('Accuracy')
+#     axes[0, 0].legend()
+#     axes[0, 0].grid(True)
+    
+#     # Loss
+#     axes[0, 1].plot(history.history['loss'], label='Training Loss')
+#     axes[0, 1].plot(history.history['val_loss'], label='Validation Loss')
+#     axes[0, 1].set_title('Model Loss')
+#     axes[0, 1].set_xlabel('Epoch')
+#     axes[0, 1].set_ylabel('Loss')
+#     axes[0, 1].legend()
+#     axes[0, 1].grid(True)
+    
+#     # Precision
+#     axes[1, 0].plot(history.history['precision'], label='Training Precision')
+#     axes[1, 0].plot(history.history['val_precision'], label='Validation Precision')
+#     axes[1, 0].set_title('Model Precision')
+#     axes[1, 0].set_xlabel('Epoch')
+#     axes[1, 0].set_ylabel('Precision')
+#     axes[1, 0].legend()
+#     axes[1, 0].grid(True)
+    
+#     # Recall
+#     axes[1, 1].plot(history.history['recall'], label='Training Recall')
+#     axes[1, 1].plot(history.history['val_recall'], label='Validation Recall')
+#     axes[1, 1].set_title('Model Recall')
+#     axes[1, 1].set_xlabel('Epoch')
+#     axes[1, 1].set_ylabel('Recall')
+#     axes[1, 1].legend()
+#     axes[1, 1].grid(True)
+    
+#     plt.tight_layout()
+#     plt.savefig('model/training_history.png')
+#     plt.show()
+
+# plot_training_history(history)
+
+# # Evaluate the model
+# print("\nEvaluating model on validation set...")
+# val_loss, val_accuracy, val_precision, val_recall = model.evaluate(validation_generator)
+# print(f"Validation Accuracy: {val_accuracy:.2%}")
+# print(f"Validation Precision: {val_precision:.2%}")
+# print(f"Validation Recall: {val_recall:.2%}")
+
+# # Calculate F1 Score
+# val_f1 = 2 * (val_precision * val_recall) / (val_precision + val_recall)
+# print(f"Validation F1 Score: {val_f1:.2%}")
+
+# # Save evaluation metrics
+# metrics = {
+#     'accuracy': float(val_accuracy),
+#     'precision': float(val_precision),
+#     'recall': float(val_recall),
+#     'f1_score': float(val_f1)
+# }
+
+# with open('model/evaluation_metrics.json', 'w') as f:
+#     json.dump(metrics, f, indent=2)
+
+# print("\nModel training and evaluation completed!")
+# print("Model saved as 'model/disease_model.h5'")
+
+
+
+
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras import layers, models
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.applications import EfficientNetB0
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau, TensorBoard
+import numpy as np
+import matplotlib.pyplot as plt
+import os
+import json
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from datetime import datetime
+
+# Configuration
+IMG_SIZE = (224, 224)
+BATCH_SIZE = 32
+EPOCHS = 50
+NUM_CLASSES = 50  # Update based on your dataset
+DATA_DIR = 'dataset'  # Path to your dataset
+MODEL_PATH = 'model/disease_model.h5'
+
+def create_data_generators():
+    """Create data generators with augmentation"""
+    train_datagen = ImageDataGenerator(
+        rescale=1./255,
+        validation_split=0.2,
+        rotation_range=40,
+        width_shift_range=0.2,
+        height_shift_range=0.2,
+        shear_range=0.2,
+        zoom_range=0.2,
+        horizontal_flip=True,
+        vertical_flip=True,
+        brightness_range=[0.8, 1.2],
+        fill_mode='nearest'
+    )
+    
+    # Training generator
+    train_generator = train_datagen.flow_from_directory(
+        DATA_DIR,
+        target_size=IMG_SIZE,
+        batch_size=BATCH_SIZE,
+        class_mode='categorical',
+        subset='training',
+        shuffle=True
+    )
+    
+    # Validation generator
+    val_generator = train_datagen.flow_from_directory(
+        DATA_DIR,
+        target_size=IMG_SIZE,
+        batch_size=BATCH_SIZE,
+        class_mode='categorical',
+        subset='validation',
+        shuffle=False
+    )
+    
+    return train_generator, val_generator
+
+def create_model(num_classes):
+    """Create and compile the model"""
+    # Load EfficientNetB0 with pre-trained weights
+    base_model = EfficientNetB0(
+        include_top=False,
+        weights='imagenet',
+        input_shape=(224, 224, 3),
+        pooling='avg'
+    )
+    
+    # Freeze base model layers initially
+    base_model.trainable = False
+    
+    # Create new model on top
+    inputs = keras.Input(shape=(224, 224, 3))
+    x = base_model(inputs, training=False)
+    x = layers.Dropout(0.5)(x)
+    x = layers.Dense(512, activation='relu')(x)
+    x = layers.BatchNormalization()(x)
+    x = layers.Dropout(0.3)(x)
+    outputs = layers.Dense(num_classes, activation='softmax')(x)
+    
+    model = keras.Model(inputs, outputs)
+    
+    # Compile the model
+    model.compile(
+        optimizer=keras.optimizers.Adam(learning_rate=0.001),
+        loss='categorical_crossentropy',
+        metrics=['accuracy', 
+                keras.metrics.Precision(name='precision'),
+                keras.metrics.Recall(name='recall'),
+                keras.metrics.AUC(name='auc')]
+    )
+    
+    return model, base_model
+
+def train_model():
+    """Main training function"""
+    print("🚀 Starting model training...")
+    
+    # Create data generators
+    print("📊 Creating data generators...")
+    train_generator, val_generator = create_data_generators()
+    
+    # Get class names
+    class_names = list(train_generator.class_indices.keys())
+    print(f"✅ Found {len(class_names)} classes")
+    print(f"Classes: {class_names}")
+    
+    # Save class names
+    with open('model/class_names.json', 'w') as f:
+        json.dump(class_names, f, indent=2)
+    
+    # Create model
+    print("🤖 Creating model...")
+    model, base_model = create_model(len(class_names))
+    model.summary()
+    
+    # Callbacks
+    callbacks = [
+        EarlyStopping(
+            monitor='val_loss',
+            patience=15,
+            restore_best_weights=True,
+            verbose=1
+        ),
+        ModelCheckpoint(
+            'model/best_model.h5',
+            monitor='val_accuracy',
+            save_best_only=True,
+            verbose=1
+        ),
+        ReduceLROnPlateau(
+            monitor='val_loss',
+            factor=0.5,
+            patience=5,
+            min_lr=1e-6,
+            verbose=1
+        ),
+        TensorBoard(
+            log_dir=f'logs/{datetime.now().strftime("%Y%m%d-%H%M%S")}',
+            histogram_freq=1
+        )
+    ]
+    
+    # Step 1: Train the top layers
+    print("🔨 Step 1: Training top layers...")
+    history1 = model.fit(
+        train_generator,
+        steps_per_epoch=train_generator.samples // BATCH_SIZE,
+        validation_data=val_generator,
+        validation_steps=val_generator.samples // BATCH_SIZE,
+        epochs=20,
+        callbacks=callbacks,
+        verbose=1
+    )
+    
+    # Step 2: Unfreeze some base model layers
+    print("🔨 Step 2: Fine-tuning base model...")
+    base_model.trainable = True
+    
+    # Fine-tune from this layer onwards
+    fine_tune_at = 100
+    
+    # Freeze all layers before fine_tune_at
+    for layer in base_model.layers[:fine_tune_at]:
+        layer.trainable = False
+    
+    # Recompile with lower learning rate
+    model.compile(
+        optimizer=keras.optimizers.Adam(learning_rate=1e-4),
+        loss='categorical_crossentropy',
+        metrics=['accuracy', 'precision', 'recall', 'auc']
+    )
+    
+    # Continue training
+    history2 = model.fit(
+        train_generator,
+        steps_per_epoch=train_generator.samples // BATCH_SIZE,
+        validation_data=val_generator,
+        validation_steps=val_generator.samples // BATCH_SIZE,
+        epochs=EPOCHS,
+        initial_epoch=history1.epoch[-1],
+        callbacks=callbacks,
+        verbose=1
+    )
+    
+    # Combine histories
+    history = {
+        'accuracy': history1.history['accuracy'] + history2.history['accuracy'],
+        'val_accuracy': history1.history['val_accuracy'] + history2.history['val_accuracy'],
+        'loss': history1.history['loss'] + history2.history['loss'],
+        'val_loss': history1.history['val_loss'] + history2.history['val_loss'],
+        'precision': history1.history['precision'] + history2.history['precision'],
+        'val_precision': history1.history['val_precision'] + history2.history['val_precision'],
+        'recall': history1.history['recall'] + history2.history['recall'],
+        'val_recall': history1.history['val_recall'] + history2.history['val_recall']
+    }
+    
+    return model, history, train_generator, val_generator
+
+def plot_training_history(history):
+    """Plot training history"""
+    fig, axes = plt.subplots(2, 3, figsize=(18, 10))
+    
+    # Accuracy
+    axes[0, 0].plot(history['accuracy'], label='Training Accuracy')
+    axes[0, 0].plot(history['val_accuracy'], label='Validation Accuracy')
+    axes[0, 0].set_title('Model Accuracy')
+    axes[0, 0].set_xlabel('Epoch')
+    axes[0, 0].set_ylabel('Accuracy')
+    axes[0, 0].legend()
+    axes[0, 0].grid(True)
+    
+    # Loss
+    axes[0, 1].plot(history['loss'], label='Training Loss')
+    axes[0, 1].plot(history['val_loss'], label='Validation Loss')
+    axes[0, 1].set_title('Model Loss')
+    axes[0, 1].set_xlabel('Epoch')
+    axes[0, 1].set_ylabel('Loss')
+    axes[0, 1].legend()
+    axes[0, 1].grid(True)
+    
+    # Precision
+    axes[0, 2].plot(history['precision'], label='Training Precision')
+    axes[0, 2].plot(history['val_precision'], label='Validation Precision')
+    axes[0, 2].set_title('Model Precision')
+    axes[0, 2].set_xlabel('Epoch')
+    axes[0, 2].set_ylabel('Precision')
+    axes[0, 2].legend()
+    axes[0, 2].grid(True)
+    
+    # Recall
+    axes[1, 0].plot(history['recall'], label='Training Recall')
+    axes[1, 0].plot(history['val_recall'], label='Validation Recall')
+    axes[1, 0].set_title('Model Recall')
+    axes[1, 0].set_xlabel('Epoch')
+    axes[1, 0].set_ylabel('Recall')
+    axes[1, 0].legend()
+    axes[1, 0].grid(True)
+    
+    # Learning Rate (if available)
+    if 'lr' in history:
+        axes[1, 1].plot(history['lr'], label='Learning Rate')
+        axes[1, 1].set_title('Learning Rate Schedule')
+        axes[1, 1].set_xlabel('Epoch')
+        axes[1, 1].set_ylabel('Learning Rate')
+        axes[1, 1].legend()
+        axes[1, 1].grid(True)
+    
+    # F1 Score
+    if 'precision' in history and 'recall' in history:
+        f1_scores = [2 * (p * r) / (p + r + 1e-7) for p, r in zip(history['precision'], history['recall'])]
+        val_f1_scores = [2 * (p * r) / (p + r + 1e-7) for p, r in zip(history['val_precision'], history['val_recall'])]
+        
+        axes[1, 2].plot(f1_scores, label='Training F1 Score')
+        axes[1, 2].plot(val_f1_scores, label='Validation F1 Score')
+        axes[1, 2].set_title('F1 Score')
+        axes[1, 2].set_xlabel('Epoch')
+        axes[1, 2].set_ylabel('F1 Score')
+        axes[1, 2].legend()
+        axes[1, 2].grid(True)
+    
+    plt.tight_layout()
+    plt.savefig('model/training_history.png', dpi=300, bbox_inches='tight')
+    plt.show()
+
+def evaluate_model(model, val_generator):
+    """Evaluate the trained model"""
+    print("\n📈 Evaluating model...")
+    
+    # Get evaluation metrics
+    val_loss, val_accuracy, val_precision, val_recall, val_auc = model.evaluate(val_generator)
+    
+    # Calculate F1 Score
+    val_f1 = 2 * (val_precision * val_recall) / (val_precision + val_recall + 1e-7)
+    
+    print(f"✅ Evaluation Results:")
+    print(f"   Loss: {val_loss:.4f}")
+    print(f"   Accuracy: {val_accuracy:.2%}")
+    print(f"   Precision: {val_precision:.2%}")
+    print(f"   Recall: {val_recall:.2%}")
+    print(f"   F1 Score: {val_f1:.2%}")
+    print(f"   AUC: {val_auc:.2%}")
+    
+    # Save evaluation metrics
+    metrics = {
+        'loss': float(val_loss),
+        'accuracy': float(val_accuracy),
+        'precision': float(val_precision),
+        'recall': float(val_recall),
+        'f1_score': float(val_f1),
+        'auc': float(val_auc),
+        'timestamp': datetime.now().isoformat(),
+        'model_name': 'EfficientNetB0',
+        'img_size': IMG_SIZE,
+        'batch_size': BATCH_SIZE,
+        'num_classes': val_generator.num_classes,
+        'total_samples': val_generator.samples
+    }
+    
+    with open('model/evaluation_metrics.json', 'w') as f:
+        json.dump(metrics, f, indent=2)
+    
+    return metrics
+
+def main():
+    """Main training pipeline"""
+    print("=" * 60)
+    print("🌿 Multi-Crop Disease Detection Model Training")
+    print("=" * 60)
+    
+    # Check if dataset exists
+    if not os.path.exists(DATA_DIR):
+        print(f"❌ Dataset directory '{DATA_DIR}' not found!")
+        print("📁 Please create the dataset structure:")
+        print(f"   {DATA_DIR}/")
+        print("   ├── Apple_Scab/")
+        print("   ├── Apple_Black_Rot/")
+        print("   └── ... (other disease folders)")
+        return
+    
+    # Check if dataset has images
+    disease_folders = [d for d in os.listdir(DATA_DIR) if os.path.isdir(os.path.join(DATA_DIR, d))]
+    if len(disease_folders) == 0:
+        print("❌ No disease folders found in dataset directory!")
+        return
+    
+    print(f"📂 Found {len(disease_folders)} disease folders")
+    
+    # Train the model
+    try:
+        model, history, train_generator, val_generator = train_model()
+        
+        # Save the final model
+        model.save(MODEL_PATH)
+        print(f"✅ Model saved to {MODEL_PATH}")
+        
+        # Plot training history
+        plot_training_history(history)
+        
+        # Evaluate the model
+        metrics = evaluate_model(model, val_generator)
+        
+        # Save training report
+        report = {
+            'training_date': datetime.now().isoformat(),
+            'model_architecture': 'EfficientNetB0',
+            'input_size': IMG_SIZE,
+            'batch_size': BATCH_SIZE,
+            'epochs': len(history['accuracy']),
+            'metrics': metrics,
+            'classes': list(train_generator.class_indices.keys()),
+            'class_distribution': train_generator.class_indices
+        }
+        
+        with open('model/training_report.json', 'w') as f:
+            json.dump(report, f, indent=2)
+        
+        print("\n🎉 Training completed successfully!")
+        print("📊 Check the 'model/' directory for:")
+        print("   - disease_model.h5 (model file)")
+        print("   - training_history.png (training graphs)")
+        print("   - evaluation_metrics.json (performance metrics)")
+        print("   - training_report.json (complete report)")
+        
+    except Exception as e:
+        print(f"❌ Training failed: {str(e)}")
+        import traceback
+        traceback.print_exc()
+
+if __name__ == '__main__':
+    main()

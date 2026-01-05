@@ -1,0 +1,548 @@
+{% extends "base.html" %} {% block title %}Home - Disease Detection{% endblock
+%} {% block extra_css %}
+<style>
+  .hero-section {
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+      url("{{ url_for('static', filename='images/background.jpg') }}");
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding: 120px 0 80px;
+    margin-top: 76px;
+  }
+
+  .upload-area {
+    border: 3px dashed #28a745;
+    border-radius: 15px;
+    padding: 40px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.95);
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .upload-area:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  }
+
+  .camera-icon {
+    font-size: 4rem;
+    color: #28a745;
+  }
+
+  .result-card {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    margin-top: 30px;
+    display: none;
+  }
+
+  .disease-badge {
+    font-size: 1.1rem;
+    padding: 10px 20px;
+  }
+
+  .confidence-meter {
+    height: 25px;
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 10px 0;
+  }
+
+  .confidence-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff6b6b, #ffd93d, #6bcf7f);
+    transition: width 1s ease-in-out;
+  }
+</style>
+{% endblock %} {% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6">
+        <h1 class="display-4 fw-bold mb-4">
+          AI-Powered Crop Disease Detection
+        </h1>
+        <p class="lead mb-4">
+          Detect diseases in 20+ crops instantly using advanced machine
+          learning. Protect your crops, maximize your yield.
+        </p>
+        <div class="d-flex gap-3">
+          <a href="#upload-section" class="btn btn-success btn-lg">
+            <i class="fas fa-upload me-2"></i>Detect Now
+          </a>
+          <a
+            href="{{ url_for('tutorial') }}"
+            class="btn btn-outline-light btn-lg"
+            target="_blank"
+          >
+            <i class="fas fa-play-circle me-2"></i>Watch Tutorial
+          </a>
+        </div>
+      </div>
+      <div class="col-lg-6 text-center">
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/3062/3062634.png"
+          alt="AI Agriculture"
+          class="img-fluid"
+          style="max-height: 300px"
+        />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Upload Section -->
+<section id="upload-section" class="py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="text-center mb-5">
+          <h2 class="fw-bold">Upload Leaf Image</h2>
+          <p class="text-muted">
+            Upload an image of a crop leaf to detect diseases
+          </p>
+        </div>
+
+        <!-- Upload Area -->
+        <div class="upload-area mb-4" id="uploadArea">
+          <i class="fas fa-cloud-upload-alt camera-icon mb-3"></i>
+          <h4>Drag & Drop or Click to Upload</h4>
+          <p class="text-muted mb-4">
+            Supported formats: JPG, PNG, JPEG (Max 16MB)
+          </p>
+          <input type="file" id="imageUpload" accept="image/*" class="d-none" />
+          <button
+            class="btn btn-primary me-3"
+            onclick="document.getElementById('imageUpload').click()"
+          >
+            <i class="fas fa-upload me-2"></i>Upload Image
+          </button>
+          <button class="btn btn-success" onclick="openCamera()">
+            <i class="fas fa-camera me-2"></i>Use Camera
+          </button>
+        </div>
+
+        <!-- Camera Preview (Hidden by default) -->
+        <div id="cameraPreview" class="text-center mb-4" style="display: none">
+          <video
+            id="cameraStream"
+            autoplay
+            playsinline
+            style="width: 100%; max-width: 500px; border-radius: 10px"
+          ></video>
+          <div class="mt-3">
+            <button class="btn btn-danger me-2" onclick="captureImage()">
+              <i class="fas fa-camera me-2"></i>Capture
+            </button>
+            <button class="btn btn-secondary" onclick="closeCamera()">
+              <i class="fas fa-times me-2"></i>Close Camera
+            </button>
+          </div>
+          <canvas id="captureCanvas" class="d-none"></canvas>
+        </div>
+
+        <!-- Selected Image Preview -->
+        <div id="imagePreview" class="text-center mb-4" style="display: none">
+          <h5>Selected Image</h5>
+          <img
+            id="previewImage"
+            src=""
+            alt="Preview"
+            class="img-fluid rounded"
+            style="max-height: 300px"
+          />
+          <div class="mt-3">
+            <button
+              class="btn btn-warning me-2"
+              onclick="document.getElementById('imageUpload').click()"
+            >
+              <i class="fas fa-redo me-2"></i>Change Image
+            </button>
+            <button class="btn btn-success" onclick="predictDisease()">
+              <i class="fas fa-search me-2"></i>Detect Disease
+            </button>
+          </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div id="loadingSpinner" class="text-center" style="display: none">
+          <div
+            class="spinner-border text-success"
+            role="status"
+            style="width: 3rem; height: 3rem"
+          >
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <h5 class="mt-3">Analyzing Image...</h5>
+          <p class="text-muted">
+            Our AI is detecting patterns and identifying diseases
+          </p>
+        </div>
+
+        <!-- Results Section -->
+        <div id="resultSection" class="result-card" style="display: none">
+          <div class="text-center mb-4">
+            <h3 class="fw-bold">Detection Results</h3>
+            <div class="d-flex justify-content-center align-items-center gap-3">
+              <span id="diseaseName" class="badge disease-badge bg-danger"
+                >Disease Name</span
+              >
+              <span id="confidenceScore" class="badge disease-badge bg-info"
+                >95%</span
+              >
+            </div>
+          </div>
+
+          <!-- Confidence Meter -->
+          <div class="mb-4">
+            <h6>Confidence Level</h6>
+            <div class="confidence-meter bg-light">
+              <div
+                id="confidenceFill"
+                class="confidence-fill"
+                style="width: 0%"
+              ></div>
+            </div>
+            <div class="d-flex justify-content-between mt-1">
+              <small>Low</small>
+              <small>Medium</small>
+              <small>High</small>
+            </div>
+          </div>
+
+          <!-- Disease Information -->
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <h6>
+                <i class="fas fa-info-circle text-primary me-2"></i>Description
+              </h6>
+              <p id="diseaseDescription" class="text-muted"></p>
+            </div>
+            <div class="col-md-6 mb-3">
+              <h6>
+                <i class="fas fa-exclamation-triangle text-warning me-2"></i
+                >Causes
+              </h6>
+              <ul id="diseaseCauses" class="text-muted"></ul>
+            </div>
+            <div class="col-md-6 mb-3">
+              <h6>
+                <i class="fas fa-shield-alt text-success me-2"></i>Prevention
+              </h6>
+              <ul id="diseasePreventions" class="text-muted"></ul>
+            </div>
+            <div class="col-md-6 mb-3">
+              <h6>
+                <i class="fas fa-stethoscope text-info me-2"></i>Treatment
+              </h6>
+              <ul id="diseaseTreatments" class="text-muted"></ul>
+            </div>
+            <div class="col-md-6 mb-3">
+              <h6>
+                <i class="fas fa-leaf text-success me-2"></i>Organic Remedies
+              </h6>
+              <ul id="organicRemedies" class="text-muted"></ul>
+            </div>
+            <div class="col-md-6 mb-3">
+              <h6>
+                <i class="fas fa-flask text-danger me-2"></i>Chemical Controls
+              </h6>
+              <ul id="chemicalControls" class="text-muted"></ul>
+            </div>
+          </div>
+
+          <div class="text-center mt-4">
+            <button class="btn btn-primary me-2" onclick="printResults()">
+              <i class="fas fa-print me-2"></i>Print Report
+            </button>
+            <button class="btn btn-success" onclick="startNewDetection()">
+              <i class="fas fa-redo me-2"></i>New Detection
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Supported Crops -->
+    <div class="row mt-5">
+      <div class="col-12">
+        <h3 class="text-center mb-4">Supported Crops</h3>
+        <div class="row">
+          {% for crop in ['Apple', 'Tomato', 'Potato', 'Grape', 'Corn',
+          'Cherry', 'Strawberry', 'Peach', 'Pepper', 'Watermelon',
+          'Pomegranate', 'Eggplant', 'Custard Apple', 'Lemon'] %}
+          <div class="col-md-3 col-sm-4 col-6 mb-3">
+            <div class="crop-card text-center p-3 rounded">
+              <i class="fas fa-seedling fa-2x text-success mb-2"></i>
+              <h6 class="mb-0">{{ crop }}</h6>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section class="bg-light py-5">
+  <div class="container">
+    <h2 class="text-center mb-5">Why Choose Our System?</h2>
+    <div class="row">
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body text-center p-4">
+            <i class="fas fa-brain fa-3x text-primary mb-3"></i>
+            <h5>AI-Powered Detection</h5>
+            <p>
+              Advanced machine learning algorithms with 95%+ accuracy in disease
+              detection.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body text-center p-4">
+            <i class="fas fa-mobile-alt fa-3x text-success mb-3"></i>
+            <h5>Mobile Friendly</h5>
+            <p>
+              Capture images directly from your mobile camera for instant
+              analysis in the field.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body text-center p-4">
+            <i class="fas fa-leaf fa-3x text-warning mb-3"></i>
+            <h5>Multiple Crops</h5>
+            <p>
+              Detect diseases across 20+ different crops with detailed
+              prevention guidance.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %} {% block extra_js %}
+<script>
+  let stream = null;
+  let capturedImage = null;
+
+  // Handle file upload
+  document
+    .getElementById("imageUpload")
+    .addEventListener("change", function (e) {
+      const file = e.target.files[0];
+      if (file) {
+        if (file.size > 16 * 1024 * 1024) {
+          alert("File size must be less than 16MB");
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function (event) {
+          document.getElementById("previewImage").src = event.target.result;
+          document.getElementById("imagePreview").style.display = "block";
+          document.getElementById("cameraPreview").style.display = "none";
+          document.getElementById("uploadArea").style.display = "none";
+          capturedImage = file;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+  // Open camera
+  function openCamera() {
+    navigator.mediaDevices
+      .getUserMedia({ video: true })
+      .then(function (mediaStream) {
+        stream = mediaStream;
+        document.getElementById("cameraStream").srcObject = stream;
+        document.getElementById("cameraPreview").style.display = "block";
+        document.getElementById("uploadArea").style.display = "none";
+      })
+      .catch(function (err) {
+        alert("Error accessing camera: " + err.message);
+      });
+  }
+
+  // Close camera
+  function closeCamera() {
+    if (stream) {
+      stream.getTracks().forEach((track) => track.stop());
+      stream = null;
+    }
+    document.getElementById("cameraPreview").style.display = "none";
+    document.getElementById("uploadArea").style.display = "block";
+  }
+
+  // Capture image from camera
+  function captureImage() {
+    const video = document.getElementById("cameraStream");
+    const canvas = document.getElementById("captureCanvas");
+    const context = canvas.getContext("2d");
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    canvas.toBlob(
+      function (blob) {
+        capturedImage = new File([blob], "captured.jpg", {
+          type: "image/jpeg",
+        });
+
+        // Display preview
+        document.getElementById("previewImage").src = URL.createObjectURL(blob);
+        document.getElementById("imagePreview").style.display = "block";
+        document.getElementById("cameraPreview").style.display = "none";
+
+        // Close camera stream
+        closeCamera();
+      },
+      "image/jpeg",
+      0.8
+    );
+  }
+
+  // Predict disease
+  function predictDisease() {
+    if (!capturedImage) {
+      alert("Please select or capture an image first");
+      return;
+    }
+
+    // Show loading
+    document.getElementById("imagePreview").style.display = "none";
+    document.getElementById("loadingSpinner").style.display = "block";
+
+    // Create form data
+    const formData = new FormData();
+    formData.append("file", capturedImage);
+
+    // Send to server
+    fetch("/predict", {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // Hide loading
+        document.getElementById("loadingSpinner").style.display = "none";
+
+        if (data.success) {
+          displayResults(data);
+        } else {
+          alert("Error: " + data.error);
+          startNewDetection();
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        document.getElementById("loadingSpinner").style.display = "none";
+        alert("Failed to detect disease. Please try again.");
+        startNewDetection();
+      });
+  }
+
+  // Display results
+  function displayResults(data) {
+    // Update disease info
+    document.getElementById("diseaseName").textContent = data.disease;
+    document.getElementById("confidenceScore").textContent =
+      data.confidence + "%";
+    document.getElementById("diseaseDescription").textContent =
+      data.description;
+
+    // Update confidence meter
+    document.getElementById("confidenceFill").style.width =
+      data.confidence + "%";
+
+    // Update lists
+    updateList("diseaseCauses", data.causes);
+    updateList("diseasePreventions", data.preventions);
+    updateList("diseaseTreatments", data.treatments);
+    updateList("organicRemedies", data.organic_remedies);
+    updateList("chemicalControls", data.chemical_controls);
+
+    // Show results
+    document.getElementById("resultSection").style.display = "block";
+  }
+
+  // Update list items
+  function updateList(elementId, items) {
+    const element = document.getElementById(elementId);
+    element.innerHTML = "";
+
+    if (items && items.length > 0) {
+      items.forEach((item) => {
+        const li = document.createElement("li");
+        li.textContent = item;
+        element.appendChild(li);
+      });
+    } else {
+      const li = document.createElement("li");
+      li.textContent = "Information not available";
+      element.appendChild(li);
+    }
+  }
+
+  // Print results
+  function printResults() {
+    window.print();
+  }
+
+  // Start new detection
+  function startNewDetection() {
+    document.getElementById("resultSection").style.display = "none";
+    document.getElementById("imagePreview").style.display = "none";
+    document.getElementById("uploadArea").style.display = "block";
+    document.getElementById("imageUpload").value = "";
+    capturedImage = null;
+  }
+
+  // Initialize
+  document.addEventListener("DOMContentLoaded", function () {
+    // Add drag and drop functionality
+    const uploadArea = document.getElementById("uploadArea");
+
+    uploadArea.addEventListener("dragover", function (e) {
+      e.preventDefault();
+      this.style.borderColor = "#155724";
+      this.style.backgroundColor = "rgba(40, 167, 69, 0.1)";
+    });
+
+    uploadArea.addEventListener("dragleave", function (e) {
+      e.preventDefault();
+      this.style.borderColor = "#28a745";
+      this.style.backgroundColor = "rgba(255, 255, 255, 0.95)";
+    });
+
+    uploadArea.addEventListener("drop", function (e) {
+      e.preventDefault();
+      this.style.borderColor = "#28a745";
+      this.style.backgroundColor = "rgba(255, 255, 255, 0.95)";
+
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith("image/")) {
+        document.getElementById("imageUpload").files = e.dataTransfer.files;
+        document
+          .getElementById("imageUpload")
+          .dispatchEvent(new Event("change"));
+      } else {
+        alert("Please drop an image file");
+      }
+    });
+  });
+</script>
+{% endblock %}

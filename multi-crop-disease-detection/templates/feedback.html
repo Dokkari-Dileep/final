@@ -1,0 +1,368 @@
+{% extends "base.html" %} {% block title %}Feedback & Contact{% endblock %} {%
+block extra_css %}
+<style>
+  .feedback-header {
+    background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+      url("https://images.unsplash.com/photo-1521791136064-7986c2920216?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80");
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding: 100px 0 60px;
+    margin-top: 76px;
+  }
+
+  .feedback-form {
+    background: white;
+    border-radius: 15px;
+    padding: 40px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    margin: -50px auto 50px;
+    position: relative;
+    max-width: 800px;
+  }
+
+  .form-control,
+  .form-select {
+    border-radius: 10px;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    transition: all 0.3s;
+  }
+
+  .form-control:focus,
+  .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25);
+  }
+
+  .contact-info {
+    background: linear-gradient(
+      135deg,
+      var(--primary-color),
+      var(--secondary-color)
+    );
+    color: white;
+    padding: 30px;
+    border-radius: 15px;
+    height: 100%;
+  }
+
+  .contact-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 25px;
+  }
+
+  .contact-icon {
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    font-size: 1.2rem;
+  }
+
+  .alert {
+    border-radius: 10px;
+    border: none;
+  }
+</style>
+{% endblock %} {% block content %}
+<!-- Feedback Header -->
+<section class="feedback-header">
+  <div class="container text-center">
+    <h1 class="display-4 fw-bold">We Value Your Feedback</h1>
+    <p class="lead">
+      Help us improve by sharing your experience and suggestions
+    </p>
+  </div>
+</section>
+
+<!-- Feedback Form -->
+<section class="py-5">
+  <div class="container">
+    <div class="feedback-form">
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %} {% for category, message in messages %}
+      <div
+        class="alert alert-{{ category }} alert-dismissible fade show"
+        role="alert"
+      >
+        {{ message }}
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+        ></button>
+      </div>
+      {% endfor %} {% endif %} {% endwith %}
+
+      <form method="POST" action="{{ url_for('feedback') }}" id="feedbackForm">
+        <h3 class="mb-4 text-center">Send us a Message</h3>
+
+        <div class="row mb-4">
+          <div class="col-md-6 mb-3">
+            <label for="name" class="form-label">Full Name *</label>
+            <input
+              type="text"
+              class="form-control"
+              id="name"
+              name="name"
+              required
+              placeholder="Enter your full name"
+            />
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="email" class="form-label">Email Address *</label>
+            <input
+              type="email"
+              class="form-control"
+              id="email"
+              name="email"
+              required
+              placeholder="Enter your email"
+            />
+          </div>
+        </div>
+
+        <div class="row mb-4">
+          <div class="col-md-6 mb-3">
+            <label for="phone" class="form-label">Phone Number</label>
+            <input
+              type="tel"
+              class="form-control"
+              id="phone"
+              name="phone"
+              placeholder="Enter your phone number"
+            />
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="subject" class="form-label">Subject</label>
+            <select class="form-select" id="subject" name="subject">
+              <option value="general">General Inquiry</option>
+              <option value="technical">Technical Support</option>
+              <option value="suggestion">Feature Suggestion</option>
+              <option value="bug">Bug Report</option>
+              <option value="partnership">Partnership Opportunity</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label for="message" class="form-label">Your Message *</label>
+          <textarea
+            class="form-control"
+            id="message"
+            name="message"
+            rows="6"
+            required
+            placeholder="Please describe your query or feedback in detail..."
+          ></textarea>
+        </div>
+
+        <div class="form-check mb-4">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="newsletter"
+            name="newsletter"
+          />
+          <label class="form-check-label" for="newsletter">
+            Subscribe to our newsletter for updates and agricultural tips
+          </label>
+        </div>
+
+        <div class="text-center">
+          <button type="submit" class="btn btn-success btn-lg px-5">
+            <i class="fas fa-paper-plane me-2"></i>Send Message
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Contact Information -->
+    <div class="row mt-5">
+      <div class="col-md-4 mb-4">
+        <div class="contact-info">
+          <div class="contact-item">
+            <div class="contact-icon">
+              <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <div>
+              <h5>Our Location</h5>
+              <p>
+                Agricultural Research Center<br />123 Farm Street, Green Valley
+              </p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon">
+              <i class="fas fa-phone"></i>
+            </div>
+            <div>
+              <h5>Phone Number</h5>
+              <p>+1 (555) 123-4567<br />Mon-Fri, 9AM-6PM</p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon">
+              <i class="fas fa-envelope"></i>
+            </div>
+            <div>
+              <h5>Email Address</h5>
+              <p>support@agridetect.com<br />feedback@agridetect.com</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-8">
+        <div class="p-4 bg-white rounded shadow-sm">
+          <h4 class="mb-4">Frequently Asked Questions</h4>
+
+          <div class="accordion" id="faqAccordion">
+            <div class="accordion-item">
+              <h2 class="accordion-header">
+                <button
+                  class="accordion-button"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#faq1"
+                >
+                  How accurate is the disease detection?
+                </button>
+              </h2>
+              <div
+                id="faq1"
+                class="accordion-collapse collapse show"
+                data-bs-parent="#faqAccordion"
+              >
+                <div class="accordion-body">
+                  Our AI model achieves over 95% accuracy for most common crop
+                  diseases. Accuracy may vary for rare diseases or poor quality
+                  images.
+                </div>
+              </div>
+            </div>
+
+            <div class="accordion-item">
+              <h2 class="accordion-header">
+                <button
+                  class="accordion-button collapsed"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#faq2"
+                >
+                  Can I use this system on my mobile phone?
+                </button>
+              </h2>
+              <div
+                id="faq2"
+                class="accordion-collapse collapse"
+                data-bs-parent="#faqAccordion"
+              >
+                <div class="accordion-body">
+                  Yes! Our system is fully responsive and works perfectly on
+                  mobile devices. You can directly capture images using your
+                  phone's camera.
+                </div>
+              </div>
+            </div>
+
+            <div class="accordion-item">
+              <h2 class="accordion-header">
+                <button
+                  class="accordion-button collapsed"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#faq3"
+                >
+                  Is there any cost to use this service?
+                </button>
+              </h2>
+              <div
+                id="faq3"
+                class="accordion-collapse collapse"
+                data-bs-parent="#faqAccordion"
+              >
+                <div class="accordion-body">
+                  Currently, our basic disease detection service is completely
+                  free for farmers and agricultural professionals.
+                </div>
+              </div>
+            </div>
+
+            <div class="accordion-item">
+              <h2 class="accordion-header">
+                <button
+                  class="accordion-button collapsed"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#faq4"
+                >
+                  How long does it take to get a response to my feedback?
+                </button>
+              </h2>
+              <div
+                id="faq4"
+                class="accordion-collapse collapse"
+                data-bs-parent="#faqAccordion"
+              >
+                <div class="accordion-body">
+                  We typically respond within 24-48 hours during business days.
+                  For urgent queries, please call our support number.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %} {% block extra_js %}
+<script>
+  // Form validation
+  document
+    .getElementById("feedbackForm")
+    .addEventListener("submit", function (e) {
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const message = document.getElementById("message").value.trim();
+
+      if (!name || !email || !message) {
+        e.preventDefault();
+        alert("Please fill in all required fields marked with *");
+        return false;
+      }
+
+      // Email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        e.preventDefault();
+        alert("Please enter a valid email address");
+        return false;
+      }
+
+      // Phone validation (if provided)
+      const phone = document.getElementById("phone").value.trim();
+      if (phone) {
+        const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+        if (!phoneRegex.test(phone.replace(/[\s\-\(\)]/g, ""))) {
+          e.preventDefault();
+          alert("Please enter a valid phone number");
+          return false;
+        }
+      }
+
+      // Show loading state
+      const submitBtn = this.querySelector('button[type="submit"]');
+      submitBtn.innerHTML =
+        '<i class="fas fa-spinner fa-spin me-2"></i>Sending...';
+      submitBtn.disabled = true;
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,309 @@
+{% extends "base.html" %} {% block title %}Tutorial & Guides{% endblock %} {%
+block extra_css %}
+<style>
+  .tutorial-header {
+    background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+      url("https://images.unsplash.com/photo-1558655146-364adaf1fcc9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80");
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding: 100px 0 60px;
+    margin-top: 76px;
+  }
+
+  .video-container {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    overflow: hidden;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  }
+
+  .video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  .tutorial-step {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s;
+  }
+
+  .tutorial-step:hover {
+    transform: translateY(-5px);
+  }
+
+  .step-number {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(
+      135deg,
+      var(--primary-color),
+      var(--secondary-color)
+    );
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-right: 15px;
+  }
+
+  .resource-card {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    margin: 10px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s;
+    height: 100%;
+  }
+
+  .resource-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+
+  .resource-icon {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+  }
+</style>
+{% endblock %} {% block content %}
+<!-- Tutorial Header -->
+<section class="tutorial-header">
+  <div class="container text-center">
+    <h1 class="display-4 fw-bold">Learn How to Use Our System</h1>
+    <p class="lead">
+      Step-by-step tutorials and guides for effective disease detection
+    </p>
+  </div>
+</section>
+
+<!-- Main Tutorial Video -->
+<section class="py-5">
+  <div class="container">
+    <h2 class="text-center mb-5">Watch Our Complete Guide</h2>
+    <div class="video-container mb-5">
+      <iframe
+        src="https://www.youtube.com/embed/VIDEO_ID_HERE"
+        title="Crop Disease Detection Tutorial"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+      >
+      </iframe>
+    </div>
+
+    <div class="text-center mb-5">
+      <p class="text-muted">
+        Replace VIDEO_ID_HERE with your actual YouTube video ID
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Step-by-Step Guide -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <h2 class="text-center mb-5">How to Detect Diseases in 5 Easy Steps</h2>
+
+    <div class="row">
+      <div class="col-lg-8 mx-auto">
+        <!-- Step 1 -->
+        <div class="tutorial-step d-flex align-items-start">
+          <div class="step-number">1</div>
+          <div>
+            <h4>Capture Clear Images</h4>
+            <p>
+              Take photos of leaves against a plain background in good lighting.
+              Ensure the entire leaf is visible and focus on affected areas.
+            </p>
+            <ul class="text-muted">
+              <li>Use natural daylight if possible</li>
+              <li>Keep the camera steady</li>
+              <li>Capture multiple angles</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="tutorial-step d-flex align-items-start">
+          <div class="step-number">2</div>
+          <div>
+            <h4>Upload Your Image</h4>
+            <p>
+              Click the upload button or drag and drop your image. You can also
+              use your mobile camera directly from the website.
+            </p>
+            <ul class="text-muted">
+              <li>Supported formats: JPG, PNG, JPEG</li>
+              <li>Maximum file size: 16MB</li>
+              <li>Both healthy and diseased leaves accepted</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="tutorial-step d-flex align-items-start">
+          <div class="step-number">3</div>
+          <div>
+            <h4>AI Analysis</h4>
+            <p>
+              Our advanced machine learning model analyzes the image patterns to
+              identify potential diseases.
+            </p>
+            <ul class="text-muted">
+              <li>Pattern recognition for 50+ diseases</li>
+              <li>95%+ accuracy rate</li>
+              <li>Real-time processing</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="tutorial-step d-flex align-items-start">
+          <div class="step-number">4</div>
+          <div>
+            <h4>Review Results</h4>
+            <p>
+              Get detailed diagnosis including disease name, confidence level,
+              causes, and prevention methods.
+            </p>
+            <ul class="text-muted">
+              <li>Comprehensive disease information</li>
+              <li>Organic and chemical treatment options</li>
+              <li>Prevention strategies</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Step 5 -->
+        <div class="tutorial-step d-flex align-items-start">
+          <div class="step-number">5</div>
+          <div>
+            <h4>Take Action</h4>
+            <p>
+              Follow the recommended treatments and monitor your crops
+              regularly. Download or print the report for reference.
+            </p>
+            <ul class="text-muted">
+              <li>Immediate treatment suggestions</li>
+              <li>Long-term prevention plans</li>
+              <li>Regular monitoring advice</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Additional Resources -->
+<section class="py-5">
+  <div class="container">
+    <h2 class="text-center mb-5">Additional Resources</h2>
+
+    <div class="row">
+      <div class="col-md-4 mb-4">
+        <div class="resource-card">
+          <div class="resource-icon text-primary">
+            <i class="fas fa-book"></i>
+          </div>
+          <h5>User Manual</h5>
+          <p>Complete guide with detailed instructions and troubleshooting</p>
+          <a href="#" class="btn btn-outline-primary mt-2">Download PDF</a>
+        </div>
+      </div>
+
+      <div class="col-md-4 mb-4">
+        <div class="resource-card">
+          <div class="resource-icon text-success">
+            <i class="fas fa-file-pdf"></i>
+          </div>
+          <h5>Disease Handbook</h5>
+          <p>Comprehensive reference for all crop diseases in our database</p>
+          <a href="#" class="btn btn-outline-success mt-2">View Handbook</a>
+        </div>
+      </div>
+
+      <div class="col-md-4 mb-4">
+        <div class="resource-card">
+          <div class="resource-icon text-warning">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <h5>Best Practices</h5>
+          <p>
+            Agricultural best practices for disease prevention and management
+          </p>
+          <a href="#" class="btn btn-outline-warning mt-2">Learn More</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Tips Section -->
+<section class="py-5 bg-dark text-white">
+  <div class="container">
+    <h2 class="text-center mb-5">Pro Tips for Better Detection</h2>
+
+    <div class="row">
+      <div class="col-md-6 mb-4">
+        <div class="p-4 border border-light rounded">
+          <h5>
+            <i class="fas fa-camera text-warning me-2"></i>Image Quality Tips
+          </h5>
+          <ul>
+            <li>Clean the leaf surface before photographing</li>
+            <li>Use maximum resolution available</li>
+            <li>Avoid shadows and reflections</li>
+            <li>Include a scale reference if possible</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="col-md-6 mb-4">
+        <div class="p-4 border border-light rounded">
+          <h5>
+            <i class="fas fa-leaf text-success me-2"></i>Sampling Guidelines
+          </h5>
+          <ul>
+            <li>Sample multiple leaves from different plants</li>
+            <li>Include both healthy and affected areas</li>
+            <li>Collect samples at different growth stages</li>
+            <li>Note environmental conditions</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Copyright Notice -->
+<section class="py-4 bg-light">
+  <div class="container text-center">
+    <p class="mb-0">
+      <i class="fas fa-copyright me-2"></i>2024 Multi-Crop Disease Detection
+      System. All rights reserved.
+      <br class="d-md-none" />
+      <span class="d-none d-md-inline"> | </span>
+      Tutorial content is proprietary and protected by copyright laws.
+    </p>
+    <p class="small text-muted mt-2">
+      Unauthorized reproduction, distribution, or modification of this content
+      is strictly prohibited.
+    </p>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,178 @@
+{% extends "base.html" %} {% block title %}Dataset Information{% endblock %} {%
+block extra_css %}
+<style>
+  .dataset-header {
+    background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+      url("https://images.unsplash.com/photo-1586773860418-dc22f8b874bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80");
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding: 100px 0 60px;
+    margin-top: 76px;
+  }
+
+  .crop-section {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s;
+  }
+
+  .crop-section:hover {
+    transform: translateY(-5px);
+  }
+
+  .disease-list {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  .disease-list li {
+    padding: 8px 15px;
+    margin: 5px 0;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid var(--primary-color);
+  }
+
+  .disease-list li.disease {
+    border-left-color: #dc3545;
+  }
+
+  .disease-list li.healthy {
+    border-left-color: #28a745;
+  }
+
+  .stats-card {
+    text-align: center;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 10px;
+  }
+
+  .stats-card i {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+  }
+</style>
+{% endblock %} {% block content %}
+<!-- Dataset Header -->
+<section class="dataset-header">
+  <div class="container">
+    <h1 class="display-4 fw-bold">Our Comprehensive Dataset</h1>
+    <p class="lead">High-quality images covering 20+ crops and 50+ diseases</p>
+  </div>
+</section>
+
+<!-- Statistics -->
+<section class="py-5">
+  <div class="container">
+    <div class="row justify-content-center mb-5">
+      <div class="col-md-3">
+        <div class="stats-card bg-primary text-white">
+          <i class="fas fa-leaf"></i>
+          <h3>20+</h3>
+          <p>Crop Types</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stats-card bg-success text-white">
+          <i class="fas fa-bug"></i>
+          <h3>50+</h3>
+          <p>Disease Types</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stats-card bg-warning text-dark">
+          <i class="fas fa-images"></i>
+          <h3>10K+</h3>
+          <p>Total Images</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stats-card bg-info text-white">
+          <i class="fas fa-chart-line"></i>
+          <h3>95%</h3>
+          <p>Accuracy Rate</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Crop Sections -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <h2 class="text-center mb-5">Supported Crops & Diseases</h2>
+
+    {% for crop_name, diseases in crops.items() %}
+    <div class="crop-section fade-in">
+      <div class="row align-items-center">
+        <div class="col-md-3 text-center mb-3 mb-md-0">
+          <i
+            class="fas fa-seedling fa-4x"
+            style="color: {% cycle '#28a745', '#007bff', '#6f42c1', '#fd7e14', '#e83e8c', '#20c997' %}"
+          ></i>
+          <h4 class="mt-3">{{ crop_name }}</h4>
+        </div>
+        <div class="col-md-9">
+          <h5>Diseases & Conditions:</h5>
+          <ul class="disease-list">
+            {% for disease in diseases %}
+            <li
+              class="{% if 'Healthy' in disease %}healthy{% else %}disease{% endif %}"
+            >
+              <i
+                class="fas {% if 'Healthy' in disease %}fa-check-circle text-success{% else %}fa-exclamation-triangle text-danger{% endif %} me-2"
+              ></i>
+              {{ disease.replace('_', ' ') }}
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+
+    <!-- Dataset Information -->
+    <div class="crop-section mt-5">
+      <h3 class="mb-4">
+        <i class="fas fa-info-circle text-primary me-2"></i>Dataset Information
+      </h3>
+      <div class="row">
+        <div class="col-md-6">
+          <h5>Collection Methodology:</h5>
+          <ul>
+            <li>Images collected from agricultural research centers</li>
+            <li>Field captures under natural lighting conditions</li>
+            <li>Multiple angles and resolutions</li>
+            <li>Professional labeling by agricultural experts</li>
+          </ul>
+        </div>
+        <div class="col-md-6">
+          <h5>Data Augmentation:</h5>
+          <ul>
+            <li>Brightness and contrast adjustments</li>
+            <li>Horizontal and vertical flips</li>
+            <li>Rotation and zoom variations</li>
+            <li>Noise addition for robustness</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-5 text-center bg-success text-white">
+  <div class="container">
+    <h2 class="mb-4">Ready to Detect Diseases in Your Crops?</h2>
+    <p class="lead mb-4">Upload an image now and get instant diagnosis</p>
+    <a href="{{ url_for('index') }}" class="btn btn-light btn-lg">
+      <i class="fas fa-arrow-right me-2"></i>Go to Detection
+    </a>
+  </div>
+</section>
+{% endblock %}
