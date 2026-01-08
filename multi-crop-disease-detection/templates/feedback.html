@@ -1,368 +1,1018 @@
-{% extends "base.html" %} {% block title %}Feedback & Contact{% endblock %} {%
-block extra_css %}
-<style>
-  .feedback-header {
-    background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
-      url("https://images.unsplash.com/photo-1521791136064-7986c2920216?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80");
-    background-size: cover;
-    background-position: center;
-    color: white;
-    padding: 100px 0 60px;
-    margin-top: 76px;
-  }
-
-  .feedback-form {
-    background: white;
-    border-radius: 15px;
-    padding: 40px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-    margin: -50px auto 50px;
-    position: relative;
-    max-width: 800px;
-  }
-
-  .form-control,
-  .form-select {
-    border-radius: 10px;
-    padding: 12px 15px;
-    border: 2px solid #e0e0e0;
-    transition: all 0.3s;
-  }
-
-  .form-control:focus,
-  .form-select:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25);
-  }
-
-  .contact-info {
-    background: linear-gradient(
-      135deg,
-      var(--primary-color),
-      var(--secondary-color)
-    );
-    color: white;
-    padding: 30px;
-    border-radius: 15px;
-    height: 100%;
-  }
-
-  .contact-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 25px;
-  }
-
-  .contact-icon {
-    width: 50px;
-    height: 50px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 15px;
-    font-size: 1.2rem;
-  }
-
-  .alert {
-    border-radius: 10px;
-    border: none;
-  }
-</style>
-{% endblock %} {% block content %}
-<!-- Feedback Header -->
-<section class="feedback-header">
-  <div class="container text-center">
-    <h1 class="display-4 fw-bold">We Value Your Feedback</h1>
-    <p class="lead">
-      Help us improve by sharing your experience and suggestions
-    </p>
-  </div>
-</section>
-
-<!-- Feedback Form -->
-<section class="py-5">
-  <div class="container">
-    <div class="feedback-form">
-      {% with messages = get_flashed_messages(with_categories=true) %} {% if
-      messages %} {% for category, message in messages %}
-      <div
-        class="alert alert-{{ category }} alert-dismissible fade show"
-        role="alert"
-      >
-        {{ message }}
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="alert"
-        ></button>
-      </div>
-      {% endfor %} {% endif %} {% endwith %}
-
-      <form method="POST" action="{{ url_for('feedback') }}" id="feedbackForm">
-        <h3 class="mb-4 text-center">Send us a Message</h3>
-
-        <div class="row mb-4">
-          <div class="col-md-6 mb-3">
-            <label for="name" class="form-label">Full Name *</label>
-            <input
-              type="text"
-              class="form-control"
-              id="name"
-              name="name"
-              required
-              placeholder="Enter your full name"
-            />
-          </div>
-          <div class="col-md-6 mb-3">
-            <label for="email" class="form-label">Email Address *</label>
-            <input
-              type="email"
-              class="form-control"
-              id="email"
-              name="email"
-              required
-              placeholder="Enter your email"
-            />
-          </div>
-        </div>
-
-        <div class="row mb-4">
-          <div class="col-md-6 mb-3">
-            <label for="phone" class="form-label">Phone Number</label>
-            <input
-              type="tel"
-              class="form-control"
-              id="phone"
-              name="phone"
-              placeholder="Enter your phone number"
-            />
-          </div>
-          <div class="col-md-6 mb-3">
-            <label for="subject" class="form-label">Subject</label>
-            <select class="form-select" id="subject" name="subject">
-              <option value="general">General Inquiry</option>
-              <option value="technical">Technical Support</option>
-              <option value="suggestion">Feature Suggestion</option>
-              <option value="bug">Bug Report</option>
-              <option value="partnership">Partnership Opportunity</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="mb-4">
-          <label for="message" class="form-label">Your Message *</label>
-          <textarea
-            class="form-control"
-            id="message"
-            name="message"
-            rows="6"
-            required
-            placeholder="Please describe your query or feedback in detail..."
-          ></textarea>
-        </div>
-
-        <div class="form-check mb-4">
-          <input
-            class="form-check-input"
-            type="checkbox"
-            id="newsletter"
-            name="newsletter"
-          />
-          <label class="form-check-label" for="newsletter">
-            Subscribe to our newsletter for updates and agricultural tips
-          </label>
-        </div>
-
-        <div class="text-center">
-          <button type="submit" class="btn btn-success btn-lg px-5">
-            <i class="fas fa-paper-plane me-2"></i>Send Message
-          </button>
-        </div>
-      </form>
-    </div>
-
-    <!-- Contact Information -->
-    <div class="row mt-5">
-      <div class="col-md-4 mb-4">
-        <div class="contact-info">
-          <div class="contact-item">
-            <div class="contact-icon">
-              <i class="fas fa-map-marker-alt"></i>
-            </div>
-            <div>
-              <h5>Our Location</h5>
-              <p>
-                Agricultural Research Center<br />123 Farm Street, Green Valley
-              </p>
-            </div>
-          </div>
-          <div class="contact-item">
-            <div class="contact-icon">
-              <i class="fas fa-phone"></i>
-            </div>
-            <div>
-              <h5>Phone Number</h5>
-              <p>+1 (555) 123-4567<br />Mon-Fri, 9AM-6PM</p>
-            </div>
-          </div>
-          <div class="contact-item">
-            <div class="contact-icon">
-              <i class="fas fa-envelope"></i>
-            </div>
-            <div>
-              <h5>Email Address</h5>
-              <p>support@agridetect.com<br />feedback@agridetect.com</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-8">
-        <div class="p-4 bg-white rounded shadow-sm">
-          <h4 class="mb-4">Frequently Asked Questions</h4>
-
-          <div class="accordion" id="faqAccordion">
-            <div class="accordion-item">
-              <h2 class="accordion-header">
-                <button
-                  class="accordion-button"
-                  type="button"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#faq1"
-                >
-                  How accurate is the disease detection?
-                </button>
-              </h2>
-              <div
-                id="faq1"
-                class="accordion-collapse collapse show"
-                data-bs-parent="#faqAccordion"
-              >
-                <div class="accordion-body">
-                  Our AI model achieves over 95% accuracy for most common crop
-                  diseases. Accuracy may vary for rare diseases or poor quality
-                  images.
-                </div>
-              </div>
-            </div>
-
-            <div class="accordion-item">
-              <h2 class="accordion-header">
-                <button
-                  class="accordion-button collapsed"
-                  type="button"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#faq2"
-                >
-                  Can I use this system on my mobile phone?
-                </button>
-              </h2>
-              <div
-                id="faq2"
-                class="accordion-collapse collapse"
-                data-bs-parent="#faqAccordion"
-              >
-                <div class="accordion-body">
-                  Yes! Our system is fully responsive and works perfectly on
-                  mobile devices. You can directly capture images using your
-                  phone's camera.
-                </div>
-              </div>
-            </div>
-
-            <div class="accordion-item">
-              <h2 class="accordion-header">
-                <button
-                  class="accordion-button collapsed"
-                  type="button"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#faq3"
-                >
-                  Is there any cost to use this service?
-                </button>
-              </h2>
-              <div
-                id="faq3"
-                class="accordion-collapse collapse"
-                data-bs-parent="#faqAccordion"
-              >
-                <div class="accordion-body">
-                  Currently, our basic disease detection service is completely
-                  free for farmers and agricultural professionals.
-                </div>
-              </div>
-            </div>
-
-            <div class="accordion-item">
-              <h2 class="accordion-header">
-                <button
-                  class="accordion-button collapsed"
-                  type="button"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#faq4"
-                >
-                  How long does it take to get a response to my feedback?
-                </button>
-              </h2>
-              <div
-                id="faq4"
-                class="accordion-collapse collapse"
-                data-bs-parent="#faqAccordion"
-              >
-                <div class="accordion-body">
-                  We typically respond within 24-48 hours during business days.
-                  For urgent queries, please call our support number.
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-{% endblock %} {% block extra_js %}
-<script>
-  // Form validation
-  document
-    .getElementById("feedbackForm")
-    .addEventListener("submit", function (e) {
-      const name = document.getElementById("name").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const message = document.getElementById("message").value.trim();
-
-      if (!name || !email || !message) {
-        e.preventDefault();
-        alert("Please fill in all required fields marked with *");
-        return false;
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Feedback - AgriDetect</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"
+    ></script>
+    <script type="text/javascript">
+      emailjs.init("6KRJpYXgvjzdRtsbB"); // Get from emailjs.com
+    </script>
+    <style>
+      :root {
+        --primary-color: #2e7d32;
+        --primary-dark: #1b5e20;
+        --primary-light: #4caf50;
+        --secondary-color: #ff9800;
       }
 
-      // Email validation
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        e.preventDefault();
-        alert("Please enter a valid email address");
-        return false;
+      body {
+        background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+        min-height: 100vh;
+        font-family: "Poppins", sans-serif;
       }
 
-      // Phone validation (if provided)
-      const phone = document.getElementById("phone").value.trim();
-      if (phone) {
-        const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
-        if (!phoneRegex.test(phone.replace(/[\s\-\(\)]/g, ""))) {
-          e.preventDefault();
-          alert("Please enter a valid phone number");
-          return false;
+      .feedback-hero {
+        background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+          url("https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80")
+            center/cover;
+        color: white;
+        text-align: center;
+        padding: 4rem 2rem;
+        margin-bottom: 3rem;
+      }
+
+      .feedback-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+      }
+
+      .feedback-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+        margin: 3rem 0;
+      }
+
+      @media (max-width: 992px) {
+        .feedback-content {
+          grid-template-columns: 1fr;
         }
       }
 
-      // Show loading state
-      const submitBtn = this.querySelector('button[type="submit"]');
-      submitBtn.innerHTML =
-        '<i class="fas fa-spinner fa-spin me-2"></i>Sending...';
-      submitBtn.disabled = true;
-    });
-</script>
-{% endblock %}
+      .feedback-form-container {
+        background: white;
+        padding: 2.5rem;
+        border-radius: 15px;
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+      }
+
+      .feedback-form-container h2 {
+        color: var(--primary-dark);
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-group label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: var(--dark-color);
+      }
+
+      .form-group input,
+      .form-group select,
+      .form-group textarea {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        font-family: "Poppins", sans-serif;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .form-group input:focus,
+      .form-group select:focus,
+      .form-group textarea:focus {
+        border-color: var(--primary-color);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+      }
+
+      .form-group small {
+        display: block;
+        margin-top: 0.5rem;
+        color: var(--gray-color);
+        font-size: 0.85rem;
+      }
+
+      .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+      }
+
+      .contact-info {
+        background: white;
+        padding: 2.5rem;
+        border-radius: 15px;
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+      }
+
+      .contact-info h2 {
+        color: var(--primary-dark);
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .contact-method {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid #eee;
+      }
+
+      .contact-method i {
+        font-size: 1.5rem;
+        color: var(--primary-color);
+        margin-top: 0.3rem;
+      }
+
+      .contact-method h4 {
+        margin-bottom: 0.5rem;
+        color: var(--dark-color);
+      }
+
+      .contact-method p {
+        color: var(--gray-color);
+        margin-bottom: 0.25rem;
+      }
+
+      .contact-method small {
+        color: #888;
+        font-size: 0.85rem;
+      }
+
+      .faq-section {
+        margin-top: 2rem;
+      }
+
+      .faq-section h3 {
+        color: var(--primary-dark);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .faq-item {
+        margin-bottom: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid #eee;
+      }
+
+      .faq-item h5 {
+        color: var(--primary-dark);
+        margin-bottom: 0.5rem;
+        font-size: 1rem;
+      }
+
+      .success-icon {
+        font-size: 4rem;
+        color: #4caf50;
+        margin-bottom: 1.5rem;
+      }
+
+      .rating-section {
+        margin: 1.5rem 0;
+      }
+
+      .rating-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+      }
+
+      .star-rating {
+        display: flex;
+        gap: 0.5rem;
+        direction: rtl;
+      }
+
+      .star-rating input {
+        display: none;
+      }
+
+      .star-rating label {
+        font-size: 2rem;
+        color: #ddd;
+        cursor: pointer;
+        transition: color 0.3s;
+      }
+
+      .star-rating input:checked ~ label,
+      .star-rating label:hover,
+      .star-rating label:hover ~ label {
+        color: #ff9800;
+      }
+
+      .form-success {
+        display: none;
+        text-align: center;
+        padding: 2rem;
+      }
+
+      .form-success .success-icon {
+        font-size: 4rem;
+        color: #4caf50;
+        margin-bottom: 1.5rem;
+      }
+
+      .testimonials {
+        background: linear-gradient(
+          135deg,
+          var(--primary-dark),
+          var(--primary-color)
+        );
+        color: white;
+        padding: 3rem;
+        border-radius: 15px;
+        margin: 3rem 0;
+      }
+
+      .testimonials h2 {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      .testimonial-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+      }
+
+      .testimonial-card {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 1.5rem;
+        border-radius: 10px;
+        backdrop-filter: blur(10px);
+      }
+
+      .testimonial-rating {
+        color: #ffd700;
+        margin-bottom: 1rem;
+      }
+
+      .testimonial-text {
+        font-style: italic;
+        margin-bottom: 1rem;
+      }
+
+      .testimonial-author {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .author-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: white;
+        color: var(--primary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+      }
+
+      .author-info h4 {
+        margin: 0;
+      }
+
+      .author-info p {
+        margin: 0;
+        opacity: 0.8;
+        font-size: 0.9rem;
+      }
+
+      .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        z-index: 1002;
+        animation: slideIn 0.3s ease;
+        max-width: 400px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      .notification.success {
+        background: #4caf50;
+      }
+      .notification.error {
+        background: #f44336;
+      }
+      .notification.warning {
+        background: #ff9800;
+      }
+      .notification.info {
+        background: #2196f3;
+      }
+
+      .close-notification {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.2rem;
+        cursor: pointer;
+        margin-left: auto;
+        padding: 0;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      @keyframes slideIn {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+      <div class="nav-container">
+        <div class="logo">
+          <i class="fas fa-leaf"></i>
+          <span>AgriDetect</span>
+        </div>
+        <ul class="nav-menu">
+          <li>
+            <a href="/"><i class="fas fa-home"></i> Home</a>
+          </li>
+          <li>
+            <a href="/dataset" target="_blank"
+              ><i class="fas fa-database"></i> Dataset</a
+            >
+          </li>
+          <li>
+            <a href="/feedback" class="active"
+              ><i class="fas fa-comment-dots"></i> Feedback</a
+            >
+          </li>
+          <li>
+            <a href="/tutorial" target="_blank"
+              ><i class="fas fa-graduation-cap"></i> Tutorial</a
+            >
+          </li>
+        </ul>
+        <div class="mobile-menu">
+          <i class="fas fa-bars"></i>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="feedback-hero">
+      <div class="hero-content">
+        <h1>Feedback & Support</h1>
+        <p class="subtitle">
+          We value your feedback. Help us improve AgriDetect by sharing your
+          experience.
+        </p>
+      </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="feedback-container">
+      <div class="feedback-content">
+        <!-- Feedback Form -->
+        <div class="feedback-form-container">
+          <h2><i class="fas fa-comment-dots"></i> Send Feedback</h2>
+          <form id="feedbackform" method="POST">
+            <div class="form-group">
+              <label for="name"><i class="fas fa-user"></i> Full Name *</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                required
+                placeholder="Enter your full name"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="email"
+                ><i class="fas fa-envelope"></i> Email Address *</label
+              >
+              <input
+                type="email"
+                id="email"
+                name="email"
+                required
+                placeholder="Enter your email address"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="contact"
+                ><i class="fas fa-phone"></i> Contact Number</label
+              >
+              <input
+                type="tel"
+                id="contact"
+                name="contact"
+                placeholder="Enter your contact number"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="category"
+                ><i class="fas fa-tag"></i> Feedback Type *</label
+              >
+              <select id="category" name="category" required>
+                <option value="">Select feedback type</option>
+                <option value="bug">Bug Report</option>
+                <option value="feature">Feature Request</option>
+                <option value="improvement">Improvement Suggestion</option>
+                <option value="accuracy">Detection Accuracy</option>
+                <option value="usability">Usability Issue</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            <div class="rating-section">
+              <div class="rating-label">
+                <i class="fas fa-star"></i> Overall Rating
+              </div>
+              <div class="star-rating">
+                <input type="radio" id="star5" name="rating" value="5" />
+                <label for="star5">★</label>
+                <input type="radio" id="star4" name="rating" value="4" />
+                <label for="star4">★</label>
+                <input type="radio" id="star3" name="rating" value="3" />
+                <label for="star3">★</label>
+                <input type="radio" id="star2" name="rating" value="2" />
+                <label for="star2">★</label>
+                <input type="radio" id="star1" name="rating" value="1" />
+                <label for="star1">★</label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="subject"
+                ><i class="fas fa-heading"></i> Subject *</label
+              >
+              <input
+                type="text"
+                id="subject"
+                name="subject"
+                required
+                placeholder="Brief description of your feedback"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="message"
+                ><i class="fas fa-comment"></i> Detailed Message *</label
+              >
+              <textarea
+                id="message"
+                name="message"
+                rows="6"
+                required
+                placeholder="Please provide detailed feedback..."
+              ></textarea>
+              <small
+                >Include specific examples if reporting bugs or suggesting
+                improvements</small
+              >
+            </div>
+
+            <div class="alert">{{ msg }}</div>
+
+            <div class="form-group">
+              <label for="attachment"
+                ><i class="fas fa-paperclip"></i> Attachments (Optional)</label
+              >
+              <input
+                type="file"
+                id="attachment"
+                name="attachment"
+                accept="image/*,.pdf,.doc,.docx"
+              />
+              <small
+                >Upload screenshots or documents (Max 10MB, JPG, PNG, PDF,
+                DOC)</small
+              >
+            </div>
+
+            <div class="form-group">
+              <label>
+                <input type="checkbox" id="subscribe" name="subscribe" />
+                <i class="fas fa-newspaper"></i> Subscribe to updates about
+                AgriDetect improvements
+              </label>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-paper-plane"></i> Submit Feedback
+              </button>
+              <button type="reset" class="btn btn-secondary">
+                <i class="fas fa-redo"></i> Clear Form
+              </button>
+            </div>
+          </form>
+
+          <!-- Success Message (Hidden by default) -->
+          <div class="form-success" id="form-success">
+            <div class="success-icon">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <h3>Thank You for Your Feedback!</h3>
+            <p>
+              Your feedback has been submitted successfully. We'll review it and
+              get back to you if needed.
+            </p>
+            <p>
+              Reference ID:
+              <strong>FB-<span id="reference-id">123456</span></strong>
+            </p>
+            <button class="btn btn-primary" onclick="resetForm()">
+              <i class="fas fa-plus"></i> Submit Another Feedback
+            </button>
+          </div>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="contact-info">
+          <h2><i class="fas fa-headset"></i> Contact Information</h2>
+
+          <div class="contact-method">
+            <i class="fas fa-envelope-open-text"></i>
+            <div>
+              <h4>Email Support</h4>
+              <p>dokkaridileep02@gmail.com</p>
+              <small>Response within 24 hours</small>
+            </div>
+          </div>
+
+          <div class="contact-method">
+            <i class="fas fa-phone-volume"></i>
+            <div>
+              <h4>Phone Support</h4>
+              <p>+91 8008016575</p>
+              <small>Mon-Fri, 9 AM - 6 PM EST</small>
+            </div>
+          </div>
+
+          <div class="contact-method">
+            <i class="fas fa-map-marker-alt"></i>
+            <div>
+              <h4>Office Address</h4>
+              <p>
+                Lb Naga , Meerpet,<br />TKREC College<br />RangaReddy
+                Dist,Telangana-500097,India
+              </p>
+            </div>
+          </div>
+
+          <div class="contact-method">
+            <i class="fas fa-clock"></i>
+            <div>
+              <h4>Support Hours</h4>
+              <p>Monday - Friday: 9:00 AM - 6:00 PM EST</p>
+              <p>Saturday: 10:00 AM - 2:00 PM EST</p>
+              <p>Sunday: Closed</p>
+            </div>
+          </div>
+
+          <div class="faq-section">
+            <h3>
+              <i class="fas fa-question-circle"></i> Frequently Asked Questions
+            </h3>
+
+            <div class="faq-item">
+              <h5>How long does it take to get a response?</h5>
+              <p>
+                We typically respond within 24 hours during business days. For
+                urgent issues, please call our support line.
+              </p>
+            </div>
+
+            <div class="faq-item">
+              <h5>Can I request support for new crops or diseases?</h5>
+              <p>
+                Yes! We're constantly expanding our database. Use the feedback
+                form to request new crops or diseases.
+              </p>
+            </div>
+
+            <div class="faq-item">
+              <h5>How accurate is the disease detection system?</h5>
+              <p>
+                Our AI model achieves over 95% accuracy for trained diseases
+                under optimal conditions with clear images.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Testimonials Section -->
+      <div class="testimonials">
+        <h2><i class="fas fa-comments"></i> What Our Users Say</h2>
+        <div class="testimonial-grid">
+          <div class="testimonial-card">
+            <div class="testimonial-rating">★★★★★</div>
+            <p class="testimonial-text">
+              "AgriDetect saved my entire tomato crop! Early detection of blight
+              allowed me to take action before it spread."
+            </p>
+            <div class="testimonial-author">
+              <div class="author-avatar">JS</div>
+              <div class="author-info">
+                <h4>John Smith</h4>
+                <p>Tomato Farmer, California</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="testimonial-card">
+            <div class="testimonial-rating">★★★★☆</div>
+            <p class="testimonial-text">
+              "The accuracy is impressive. Helped me identify apple scab early
+              and apply the right treatment."
+            </p>
+            <div class="testimonial-author">
+              <div class="author-avatar">MJ</div>
+              <div class="author-info">
+                <h4>Maria Johnson</h4>
+                <p>Orchard Owner, Washington</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="testimonial-card">
+            <div class="testimonial-rating">★★★★★</div>
+            <p class="testimonial-text">
+              "As an agricultural student, this tool is invaluable for my
+              research. The dataset is comprehensive and well-organized."
+            </p>
+            <div class="testimonial-author">
+              <div class="author-avatar">RD</div>
+              <div class="author-info">
+                <h4>Robert Davis</h4>
+                <p>Agricultural Researcher</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-content">
+        <div class="footer-section">
+          <h4><i class="fas fa-leaf"></i> AgriDetect</h4>
+          <p>AI-powered disease detection system for sustainable agriculture</p>
+          <div class="social-icons">
+            <a href="https://www.facebook.com/"
+              ><i class="fab fa-facebook"> Facebook</i></a
+            >
+            <a href="#"><i class="fab fa-twitter"> Twitter</i></a>
+            <a href="#"><i class="fab fa-instagram"> Instagram</i></a>
+            <a href="https://www.linkedin.com/feed/"
+              ><i class="fab fa-linkedin"> LinkedIn</i></a
+            >
+          </div>
+        </div>
+        <div class="footer-section">
+          <h4>Quick Links</h4>
+          <a href="/">Home</a>
+          <a href="/dataset" target="_blank">Dataset</a>
+          <a href="/feedback">Feedback</a>
+          <a href="/tutorial" target="_blank">Tutorial</a>
+        </div>
+        <div class="footer-section">
+          <h4>Support</h4>
+          <a href="#">Help Center</a>
+          <a href="#">Documentation</a>
+          <a href="#">API Reference</a>
+          <a href="#">System Status</a>
+        </div>
+        <div class="footer-section">
+          <h4>Legal</h4>
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Cookie Policy</a>
+          <a href="#">GDPR Compliance</a>
+        </div>
+      </div>
+      <div class="copyright">
+        <p>
+          © 2025 AgriDetect. All rights reserved. |
+          <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a>
+        </p>
+      </div>
+    </footer>
+
+    <!-- Success Modal -->
+    <div class="modal" id="success-modal" style="display: none">
+      <div class="modal-content">
+        <div class="success-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <h3>Feedback Submitted Successfully!</h3>
+        <p>
+          Thank you for your valuable feedback. We'll review it and get back to
+          you if needed.
+        </p>
+        <button class="btn btn-primary" id="close-modal">Continue</button>
+      </div>
+    </div>
+
+    <script>
+            document.addEventListener("DOMContentLoaded", function () {
+              const form = document.getElementById("feedbackform");
+              const formSuccess = document.getElementById("form-success");
+              const successModal = document.getElementById("success-modal");
+              const closeModal = document.getElementById("close-modal");
+
+              // Generate random reference ID
+              function generateReferenceId() {
+                return Math.floor(100000 + Math.random() * 900000);
+              }
+
+              // Show notification
+              function showNotification(message, type = "info") {
+                const notification = document.createElement("div");
+                notification.className = `notification ${type}`;
+                notification.innerHTML = `
+                          <i class="fas fa-${getIconForType(type)}"></i>
+                          <span>${message}</span>
+                          <button class="close-notification">&times;</button>
+                      `;
+
+                document.body.appendChild(notification);
+
+                notification
+                  .querySelector(".close-notification")
+                  .addEventListener("click", () => {
+                    notification.remove();
+                  });
+
+                setTimeout(() => {
+                  if (notification.parentNode) {
+                    notification.remove();
+                  }
+                }, 5000);
+              }
+
+              function getIconForType(type) {
+                switch (type) {
+                  case "success":
+                    return "check-circle";
+                  case "error":
+                    return "exclamation-circle";
+                  case "warning":
+                    return "exclamation-triangle";
+                  default:
+                    return "info-circle";
+                }
+              }
+
+
+      document.addEventListener("DOMContentLoaded", function () {
+
+        const form = document.getElementById("feedbackForm");
+
+        form.addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const rating =
+            document.querySelector('input[name="rating"]:checked')?.value || "";
+
+
+         const formData = {
+            name: document.getElementById("name").value,
+            email: document.getElementById("email").value,
+            contact: document.getElementById("contact").value,
+            category: document.getElementById("category").value,
+            subject: document.getElementById("subject").value,
+            message: document.getElementById("message").value,
+            rating: rating,
+            subscribe: document.getElementById("subscribe").checked
+          };
+
+         try {
+            const response = await fetch("/submit-feedback", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(formData)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+              alert("✅ Feedback sent successfully!");
+              form.reset();
+            } else {
+              alert("❌ " + result.message);
+            }
+
+          } catch (err) {
+            alert("❌ Server error");
+            console.error(err);
+          }
+        });
+
+
+                // Validate form
+                if (
+                  !formData.name ||
+                  !formData.email ||
+                  !formData.category ||
+                  !formData.subject ||
+                  !formData.message
+                ) {
+                  showNotification("Please fill in all required fields", "warning");
+                  return;
+                }
+
+                try {
+                  // Show loading
+                  const submitBtn = form.querySelector('button[type="submit"]');
+                  const originalText = submitBtn.innerHTML;
+                  submitBtn.innerHTML =
+                    '<i class="fas fa-spinner fa-spin"></i> Sending...';
+                  submitBtn.disabled = true;
+
+                  // Simulate API call (in real app, this would be a fetch to your backend)
+                  await emailjs.send(
+                      "service_zui146o",   // from EmailJS
+                      "template_08jeffu",  // from EmailJS
+                      {
+                          name: formData.name,
+                          email: formData.email,
+                          contact: formData.contact || "Not provided",
+                          category: formData.category,
+                          subject: formData.subject,
+                          message: formData.message,
+                          rating: formData.rating,
+                          subscribe: formData.subscribe ? "Yes" : "No"
+                      }
+                      );
+
+
+                  // Generate reference ID
+                  const referenceId = generateReferenceId();
+
+                  // Hide form and show success message
+                  form.style.display = "none";
+                  formSuccess.style.display = "block";
+                  document.getElementById("reference-id").textContent = referenceId;
+
+                  // Show success modal
+                  successModal.style.display = "flex";
+
+                  // Log form data (in real app, this would be sent to backend)
+                  console.log("Feedback submitted:", formData);
+
+                  showNotification("Feedback submitted successfully!", "success");
+                } catch (error) {
+                  console.error("Error:", error);
+                  showNotification(
+                    "Error submitting feedback. Please try again.",
+                    "error"
+                  );
+
+                  // Reset button
+                  const submitBtn = form.querySelector('button[type="submit"]');
+                  submitBtn.innerHTML = originalText;
+                  submitBtn.disabled = false;
+                }
+              });
+
+              // Reset form
+              window.resetForm = function () {
+                form.reset();
+                form.style.display = "block";
+                formSuccess.style.display = "none";
+
+                // Reset star rating
+                document.querySelectorAll('input[name="rating"]').forEach((radio) => {
+                  radio.checked = false;
+                });
+
+                showNotification("Form reset. Ready for new feedback.", "info");
+              };
+
+              // Close modal
+              closeModal.addEventListener("click", function () {
+                successModal.style.display = "none";
+              });
+
+              // Close modal when clicking outside
+              successModal.addEventListener("click", function (e) {
+                if (e.target === successModal) {
+                  successModal.style.display = "none";
+                }
+              });
+
+              // Mobile menu toggle
+              const mobileMenu = document.querySelector(".mobile-menu");
+              const navMenu = document.querySelector(".nav-menu");
+
+              mobileMenu.addEventListener("click", () => {
+                navMenu.style.display =
+                  navMenu.style.display === "flex" ? "none" : "flex";
+              });
+
+              // Adjust menu for mobile
+              function adjustMenu() {
+                if (window.innerWidth <= 768) {
+                  navMenu.style.display = "none";
+                  navMenu.style.flexDirection = "column";
+                  navMenu.style.position = "absolute";
+                  navMenu.style.top = "100%";
+                  navMenu.style.left = "0";
+                  navMenu.style.width = "100%";
+                  navMenu.style.background = "var(--primary-dark)";
+                  navMenu.style.padding = "1rem";
+                } else {
+                  navMenu.style.display = "flex";
+                }
+              }
+
+              window.addEventListener("resize", adjustMenu);
+              adjustMenu();
+
+              // File upload validation
+              const fileInput = document.getElementById("attachment");
+              fileInput.addEventListener("change", function () {
+                const file = this.files[0];
+                if (file) {
+                  const validTypes = [
+                    "image/jpeg",
+                    "image/png",
+                    "image/jpg",
+                    "application/pdf",
+                    "application/msword",
+                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                  ];
+                  const maxSize = 10 * 1024 * 1024; // 10MB
+
+                  if (!validTypes.includes(file.type)) {
+                    showNotification(
+                      "Please upload only JPG, PNG, PDF, or DOC files",
+                      "error"
+                    );
+                    this.value = "";
+                  } else if (file.size > maxSize) {
+                    showNotification("File size must be less than 10MB", "error");
+                    this.value = "";
+                  }
+                }
+              });
+            });
+    </script>
+  </body>
+</html>
